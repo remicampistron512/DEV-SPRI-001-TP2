@@ -1,17 +1,22 @@
 package fr.fms.booking.entities;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-
-public class Booking {
+@Entity
+public class Booking implements Serializable {
+  @Serial
   private static final long serialVersionUID = 1L;
 
 
-  @id  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
   @ManyToOne
