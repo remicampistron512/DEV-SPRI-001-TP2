@@ -19,6 +19,7 @@ public class ConsoleMenus {
   private final MeetingRoomService meetingRoomService;
   private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
   private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
   public ConsoleMenus(BookingRepository bookingRepository,
       MeetingRoomRepository meetingRoomRepository, MeetingRoomService meetingRoomService){
     this.bookingRepository = bookingRepository;
@@ -83,22 +84,6 @@ public class ConsoleMenus {
     meetingRoomService.updateMeetingRoom(meetingRoomId,name,capacity);
   }
 
-  private long readExistingMeetingRoomId() {
-    while (true){
-      long id = readLong("Choisissez l'id de la salle : ");
-      if(meetingRoomRepository.existsById(id)){
-        return id;
-      }
-      System.out.println("Salle introuvable");
-    }
-  }
-
-  private void printAllMeetingRooms() {
-    for (MeetingRoom meetingRoom : meetingRoomRepository.findAll()) {
-      System.out.println(meetingRoom);
-    }
-  }
-
   private void deleteMeetingRoomMenu() {
     printAllMeetingRooms();
     long meetingRoomId = readExistingMeetingRoomId();
@@ -113,90 +98,22 @@ public class ConsoleMenus {
   }
 
   private void createBookingMenu() {
-      LocalDate date = readDate("Rentrer la date de la reservation");
+    LocalDate date = readDate("Rentrer la date de la reservation");
 
-      LocalTime startDate = readTime("Heure de début : ");
+    LocalTime startDate = readTime("Heure de début : ");
 
-      LocalTime endDate = readTime("Heure de fin : ",startDate);
+    LocalTime endDate = readTime("Heure de fin : ",startDate);
 
-      printAllMeetingRooms();
-      long meetingRoomId = readExistingMeetingRoomId();
-      if(!meetingRoomService.hasOverlap(meetingRoomId,date,startDate,endDate)){
-        MeetingRoom meetingRoom = meetingRoomRepository.getReferenceById(meetingRoomId);
-        bookingRepository.save(new Booking(date, startDate,endDate,meetingRoom));
-        System.out.println("Le créneau a bien été enregistré");
-      } else {
-        System.out.println("Ce créneau est déjà pris");
-      }
-  }
-  private LocalTime readTime(String prompt, LocalTime startTime){
-    while (true) {
-      System.out.print(prompt);
-      String input = in.nextLine().trim();
-      LocalTime dateTime = validateDateTimeFormat(input);
-      if(dateTime != null){
-        if(dateTime.isAfter(startTime)) {
-          if (dateTime.isAfter(LocalTime.of(8, 0)) && dateTime.isBefore((LocalTime.of(18, 0)))) {
-            return dateTime;
-          } else {
-            System.out.println("L'horaire doit être compris entre 8:00 et 18:00");
-          }
-        } else {
-          System.out.println("L'horaire de fin doit être après l'horaire de début");
-        }
-      }
+    printAllMeetingRooms();
+    long meetingRoomId = readExistingMeetingRoomId();
+    if(!meetingRoomService.hasOverlap(meetingRoomId,date,startDate,endDate)){
+      MeetingRoom meetingRoom = meetingRoomRepository.getReferenceById(meetingRoomId);
+      bookingRepository.save(new Booking(date, startDate,endDate,meetingRoom));
+      System.out.println("Le créneau a bien été enregistré");
+    } else {
+      System.out.println("Ce créneau est déjà pris");
     }
   }
-
-  private LocalTime readTime(String prompt){
-    while (true) {
-      System.out.print(prompt);
-      String input = in.nextLine().trim();
-      LocalTime dateTime = validateDateTimeFormat(input);
-      if(dateTime != null){
-        if(dateTime.isAfter(LocalTime.of(8,0)) && dateTime.isBefore((LocalTime.of(18,0)))){
-          return dateTime;
-        } else {
-          System.out.println("L'horaire doit être compris entre 8:00 et 18:00");
-        }
-      }
-    }
-  }
-  private LocalDate readDate(String prompt){
-    while (true) {
-      System.out.print(prompt);
-      String input = in.nextLine().trim();
-      LocalDate date = validateDateFormat(input);
-      if (date != null) {
-        if (dateIsInTheFuture(date)) {
-          return date;
-        } else {
-          System.out.println("Une date ne peut être dans le passé");
-        }
-      }
-    }
-  }
-  private LocalDate validateDateFormat(String input) {
-      try {
-        return LocalDate.parse(input, DATE_FORMAT);
-      } catch (DateTimeParseException e) {
-        System.out.println(
-            "Format de date invalide. Merci d'utiliser dd-MM-yyyy (e.g. 26-03-2026).");
-      }
-    return null;
-  }
-   private Boolean dateIsInTheFuture(LocalDate date){
-    return date.isAfter(LocalDate.now());
-   }
-  private  LocalTime validateDateTimeFormat(String input) {
-     try {
-        return LocalTime.parse(input, TIME_FORMAT);
-      } catch (DateTimeParseException e) {
-        System.out.println("Format d'heure invalide. Merci d'utiliser HH:mm (ex. 09:30).");
-      }
-    return null;
-  }
-
 
   private void deleteBookingMenu() {
     printAllBookings();
@@ -207,22 +124,6 @@ public class ConsoleMenus {
       System.out.println("La salle de réunion a bien été supprimée");
     } catch (Exception e) {
       System.out.println("Impossible de supprimer la salle " + e.getMessage());
-    }
-  }
-
-  private long readExistingBookingId() {
-    while (true){
-      long id = readLong("Choisissez l'id de la réservation : ");
-      if(bookingRepository.existsById(id)){
-        return id;
-      }
-      System.out.println("Réservation introuvable");
-    }
-  }
-
-  private void printAllBookings() {
-    for (Booking booking : bookingRepository.findAll()) {
-      System.out.println(booking);
     }
   }
 
@@ -242,21 +143,109 @@ public class ConsoleMenus {
   private void displayAvailableRoomsByTimeSlotMenu() {
   }
 
+  private long readExistingMeetingRoomId() {
+    while (true){
+      long id = readLong("Choisissez l'id de la salle : ");
+      if(meetingRoomRepository.existsById(id)){
+        return id;
+      }
+      System.out.println("Salle introuvable");
+    }
+  }
 
+  private long readExistingBookingId() {
+    while (true){
+      long id = readLong("Choisissez l'id de la réservation : ");
+      if(bookingRepository.existsById(id)){
+        return id;
+      }
+      System.out.println("Réservation introuvable");
+    }
+  }
 
+  private void printAllMeetingRooms() {
+    for (MeetingRoom meetingRoom : meetingRoomRepository.findAll()) {
+      System.out.println(meetingRoom);
+    }
+  }
 
+  private void printAllBookings() {
+    for (Booking booking : bookingRepository.findAll()) {
+      System.out.println(booking);
+    }
+  }
 
+  private LocalDate readDate(String prompt){
+    while (true) {
+      System.out.print(prompt);
+      String input = in.nextLine().trim();
+      LocalDate date = validateDateFormat(input);
+      if (date != null) {
+        if (dateIsInTheFuture(date)) {
+          return date;
+        } else {
+          System.out.println("Une date ne peut être dans le passé");
+        }
+      }
+    }
+  }
 
+  private LocalTime readTime(String prompt){
+    while (true) {
+      System.out.print(prompt);
+      String input = in.nextLine().trim();
+      LocalTime dateTime = validateDateTimeFormat(input);
+      if(dateTime != null){
+        if(dateTime.isAfter(LocalTime.of(8,0)) && dateTime.isBefore((LocalTime.of(18,0)))){
+          return dateTime;
+        } else {
+          System.out.println("L'horaire doit être compris entre 8:00 et 18:00");
+        }
+      }
+    }
+  }
 
+  private LocalTime readTime(String prompt, LocalTime startTime){
+    while (true) {
+      System.out.print(prompt);
+      String input = in.nextLine().trim();
+      LocalTime dateTime = validateDateTimeFormat(input);
+      if(dateTime != null){
+        if(dateTime.isAfter(startTime)) {
+          if (dateTime.isAfter(LocalTime.of(8, 0)) && dateTime.isBefore((LocalTime.of(18, 0)))) {
+            return dateTime;
+          } else {
+            System.out.println("L'horaire doit être compris entre 8:00 et 18:00");
+          }
+        } else {
+          System.out.println("L'horaire de fin doit être après l'horaire de début");
+        }
+      }
+    }
+  }
 
+  private LocalDate validateDateFormat(String input) {
+    try {
+      return LocalDate.parse(input, DATE_FORMAT);
+    } catch (DateTimeParseException e) {
+      System.out.println(
+          "Format de date invalide. Merci d'utiliser dd-MM-yyyy (e.g. 26-03-2026).");
+    }
+    return null;
+  }
 
+  private  LocalTime validateDateTimeFormat(String input) {
+    try {
+      return LocalTime.parse(input, TIME_FORMAT);
+    } catch (DateTimeParseException e) {
+      System.out.println("Format d'heure invalide. Merci d'utiliser HH:mm (ex. 09:30).");
+    }
+    return null;
+  }
 
-
-
-
-
-
-
+  private Boolean dateIsInTheFuture(LocalDate date){
+    return date.isAfter(LocalDate.now());
+  }
 
   /**
    * Permet de saisir un entier et de vérifier sa validité
@@ -282,19 +271,6 @@ public class ConsoleMenus {
     }
   }
 
-  private String readStr(String prompt) {
-    while (true) {
-      System.out.print(prompt);
-      String s = in.nextLine().trim();
-
-      if (!s.isEmpty()) {
-        return s;
-      }
-
-      System.out.println("Le texte saisi ne peut être vide. Merci de réessayer .");
-    }
-  }
-
   private long readLong(String prompt) {
     while (true) {
       System.out.print(prompt);
@@ -305,6 +281,19 @@ public class ConsoleMenus {
       } catch (NumberFormatException e) {
         System.out.println("Veuillez entrer un nombre valide.");
       }
+    }
+  }
+
+  private String readStr(String prompt) {
+    while (true) {
+      System.out.print(prompt);
+      String s = in.nextLine().trim();
+
+      if (!s.isEmpty()) {
+        return s;
+      }
+
+      System.out.println("Le texte saisi ne peut être vide. Merci de réessayer .");
     }
   }
 }
