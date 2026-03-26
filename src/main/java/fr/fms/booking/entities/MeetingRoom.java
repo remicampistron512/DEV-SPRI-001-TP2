@@ -23,6 +23,7 @@ public class MeetingRoom implements Serializable {
   @OneToMany(mappedBy = "meetingRoom")
   private Collection<Booking> bookings;
 
+  public MeetingRoom(){}
   public MeetingRoom(long id, String name, int capacity) {
     this.id = id;
     this.name = name;
@@ -55,5 +56,14 @@ public class MeetingRoom implements Serializable {
 
   public void setCapacity(int capacity) {
     this.capacity = capacity;
+  }
+
+  @Override
+  public String toString() {
+    return "Article{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", capacity='" + capacity + '\'' +
+        '}';
   }
 }

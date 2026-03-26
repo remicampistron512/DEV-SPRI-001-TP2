@@ -3,6 +3,7 @@ package fr.fms.booking.ui;
 import fr.fms.booking.dao.BookingRepository;
 import fr.fms.booking.dao.MeetingRoomRepository;
 import fr.fms.booking.entities.MeetingRoom;
+import fr.fms.booking.service.MeetingRoomService;
 import java.util.Scanner;
 
 public class ConsoleMenus {
@@ -10,11 +11,13 @@ public class ConsoleMenus {
   private final Scanner in = new Scanner(System.in);
   private final MeetingRoomRepository meetingRoomRepository;
   private final BookingRepository bookingRepository;
+  private final MeetingRoomService meetingRoomService;
 
   public ConsoleMenus(BookingRepository bookingRepository,
-      MeetingRoomRepository meetingRoomRepository){
+      MeetingRoomRepository meetingRoomRepository, MeetingRoomService meetingRoomService){
     this.bookingRepository = bookingRepository;
     this.meetingRoomRepository = meetingRoomRepository;
+    this.meetingRoomService = meetingRoomService;
   }
 
   public void run() {
@@ -63,6 +66,31 @@ public class ConsoleMenus {
   }
 
   private void modifyMeetingRoomMenu() {
+
+    printAllMeetingRooms();
+
+    long  meetingRoomId = (long) readExistingMeetingRoomId();
+
+    String name = readStr("Entrez le nom de la salle");
+    int capacity = readInt("Entrez la capacité de la salle",0,100);
+
+    meetingRoomService.updateMeetingRoom(meetingRoomId,name,capacity);
+  }
+
+  private Object readExistingMeetingRoomId() {
+    while (true){
+      long id = readLong("Choisissez l'id de la salle : ");
+      if(meetingRoomRepository.existsById(id)){
+        return id;
+      }
+      System.out.println("Salle introuvable");
+    }
+  }
+
+  private void printAllMeetingRooms() {
+    for (MeetingRoom meetingRoom : meetingRoomRepository.findAll()) {
+      System.out.println(meetingRoom);
+    }
   }
 
   private void deleteMeetingRoomMenu() {
@@ -136,6 +164,19 @@ public class ConsoleMenus {
       }
 
       System.out.println("Le texte saisi ne peut être vide. Merci de réessayer .");
+    }
+  }
+
+  private long readLong(String prompt) {
+    while (true) {
+      System.out.print(prompt);
+      String input = in.nextLine();
+
+      try {
+        return Long.parseLong(input.trim());
+      } catch (NumberFormatException e) {
+        System.out.println("Veuillez entrer un nombre valide.");
+      }
     }
   }
 }
