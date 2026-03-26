@@ -121,8 +121,13 @@ public class ConsoleMenus {
 
       printAllMeetingRooms();
       long meetingRoomId = readExistingMeetingRoomId();
-      MeetingRoom meetingRoom = meetingRoomRepository.getReferenceById(meetingRoomId);
-      bookingRepository.save(new Booking(date, startDate,endDate,meetingRoom));
+      if(!meetingRoomService.hasOverlap(meetingRoomId,date,startDate,endDate)){
+        MeetingRoom meetingRoom = meetingRoomRepository.getReferenceById(meetingRoomId);
+        bookingRepository.save(new Booking(date, startDate,endDate,meetingRoom));
+        System.out.println("Le créneau a bien été enregistré");
+      } else {
+        System.out.println("Ce créneau est déjà pris");
+      }
   }
   private LocalTime readTime(String prompt, LocalTime startTime){
     while (true) {
