@@ -2,6 +2,7 @@ package fr.fms.booking;
 
 import fr.fms.booking.dao.BookingRepository;
 import fr.fms.booking.dao.MeetingRoomRepository;
+import fr.fms.booking.ui.ConsoleMenus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

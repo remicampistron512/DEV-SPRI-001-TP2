@@ -29,6 +29,10 @@ public class MeetingRoom implements Serializable {
     this.capacity = capacity;
   }
 
+  public MeetingRoom(String name, int capacity) {
+    this.name = name;
+    this.capacity = capacity;
+  }
   public long getId() {
     return id;
   }

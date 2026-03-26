@@ -2,6 +2,7 @@ package fr.fms.booking.ui;
 
 import fr.fms.booking.dao.BookingRepository;
 import fr.fms.booking.dao.MeetingRoomRepository;
+import fr.fms.booking.entities.MeetingRoom;
 import java.util.Scanner;
 
 public class ConsoleMenus {
@@ -9,6 +10,7 @@ public class ConsoleMenus {
   private final Scanner in = new Scanner(System.in);
   private final MeetingRoomRepository meetingRoomRepository;
   private final BookingRepository bookingRepository;
+
   public ConsoleMenus(BookingRepository bookingRepository,
       MeetingRoomRepository meetingRoomRepository){
     this.bookingRepository = bookingRepository;
@@ -36,8 +38,8 @@ public class ConsoleMenus {
 
       int choice = readInt(CHOICE_TEXT, 0, 9);
       switch (choice) {
-        case 1 -> createMeetignRoomMenu();
-        case 2 -> mdofifyMeetingRoomMenu(5);
+        case 1 -> createMeetingRoomMenu();
+        case 2 -> modifyMeetingRoomMenu();
         case 3 -> deleteMeetingRoomMenu();
         case 4 -> createBookingMenu();
         case 5 -> deleteBookingMenu();
@@ -52,6 +54,53 @@ public class ConsoleMenus {
       }
     }
   }
+
+  private void createMeetingRoomMenu() {
+    String name = readStr("Entrer le nom de la salle");
+    int capacity = readInt("Entrer la capacité de la salle",0,100);
+    meetingRoomRepository.save(new MeetingRoom(name, capacity));
+
+  }
+
+  private void modifyMeetingRoomMenu() {
+  }
+
+  private void deleteMeetingRoomMenu() {
+  }
+
+  private void createBookingMenu() {
+  }
+
+  private void deleteBookingMenu() {
+  }
+
+  private void displayBookingsByRoomMenu() {
+  }
+
+  private void displayBookingsByDateMenu() {
+  }
+
+  private void displayBookingsByCapacityMenu() {
+  }
+
+  private void displayAvailableRoomsByTimeSlotMenu() {
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /**
    * Permet de saisir un entier et de vérifier sa validité
@@ -74,6 +123,19 @@ public class ConsoleMenus {
       } catch (NumberFormatException e) {
         System.out.println("Nombre invalide.");
       }
+    }
+  }
+
+  private String readStr(String prompt) {
+    while (true) {
+      System.out.print(prompt);
+      String s = in.nextLine().trim();
+
+      if (!s.isEmpty()) {
+        return s;
+      }
+
+      System.out.println("Le texte saisi ne peut être vide. Merci de réessayer .");
     }
   }
 }
