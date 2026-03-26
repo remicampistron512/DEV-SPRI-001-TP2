@@ -2,8 +2,13 @@ package fr.fms.booking.ui;
 
 import fr.fms.booking.dao.BookingRepository;
 import fr.fms.booking.dao.MeetingRoomRepository;
+import fr.fms.booking.entities.Booking;
 import fr.fms.booking.entities.MeetingRoom;
 import fr.fms.booking.service.MeetingRoomService;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class ConsoleMenus {
@@ -12,7 +17,8 @@ public class ConsoleMenus {
   private final MeetingRoomRepository meetingRoomRepository;
   private final BookingRepository bookingRepository;
   private final MeetingRoomService meetingRoomService;
-
+  private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
+  private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
   public ConsoleMenus(BookingRepository bookingRepository,
       MeetingRoomRepository meetingRoomRepository, MeetingRoomService meetingRoomService){
     this.bookingRepository = bookingRepository;
@@ -107,7 +113,85 @@ public class ConsoleMenus {
   }
 
   private void createBookingMenu() {
+      LocalDate date = readDate("Rentrer la date de la reservation");
+
+      LocalTime startDate = readTime("Heure de début : ");
+
+      LocalTime endDate = readTime("Heure de fin : ",startDate);
+
+      printAllMeetingRooms();
+      long meetingRoomId = readExistingMeetingRoomId();
+      MeetingRoom meetingRoom = meetingRoomRepository.getReferenceById(meetingRoomId);
+      bookingRepository.save(new Booking(date, startDate,endDate,meetingRoom));
   }
+  private LocalTime readTime(String prompt, LocalTime startTime){
+    while (true) {
+      System.out.print(prompt);
+      String input = in.nextLine().trim();
+      LocalTime dateTime = validateDateTimeFormat(input);
+      if(dateTime != null){
+        if(dateTime.isAfter(startTime)) {
+          if (dateTime.isAfter(LocalTime.of(8, 0)) && dateTime.isBefore((LocalTime.of(18, 0)))) {
+            return dateTime;
+          } else {
+            System.out.println("L'horaire doit être compris entre 8:00 et 18:00");
+          }
+        } else {
+          System.out.println("L'horaire de fin doit être après l'horaire de début");
+        }
+      }
+    }
+  }
+
+  private LocalTime readTime(String prompt){
+    while (true) {
+      System.out.print(prompt);
+      String input = in.nextLine().trim();
+      LocalTime dateTime = validateDateTimeFormat(input);
+      if(dateTime != null){
+        if(dateTime.isAfter(LocalTime.of(8,0)) && dateTime.isBefore((LocalTime.of(18,0)))){
+          return dateTime;
+        } else {
+          System.out.println("L'horaire doit être compris entre 8:00 et 18:00");
+        }
+      }
+    }
+  }
+  private LocalDate readDate(String prompt){
+    while (true) {
+      System.out.print(prompt);
+      String input = in.nextLine().trim();
+      LocalDate date = validateDateFormat(input);
+      if (date != null) {
+        if (dateIsInTheFuture(date)) {
+          return date;
+        } else {
+          System.out.println("Une date ne peut être dans le passé");
+        }
+      }
+    }
+  }
+  private LocalDate validateDateFormat(String input) {
+      try {
+        return LocalDate.parse(input, DATE_FORMAT);
+      } catch (DateTimeParseException e) {
+        System.out.println(
+            "Format de date invalide. Merci d'utiliser dd-MM-yyyy (e.g. 26-03-2026).");
+      }
+    return null;
+  }
+   private Boolean dateIsInTheFuture(LocalDate date){
+    return date.isAfter(LocalDate.now());
+   }
+  private  LocalTime validateDateTimeFormat(String input) {
+     try {
+        return LocalTime.parse(input, TIME_FORMAT);
+      } catch (DateTimeParseException e) {
+        System.out.println("Format d'heure invalide. Merci d'utiliser HH:mm (ex. 09:30).");
+      }
+    return null;
+  }
+
 
   private void deleteBookingMenu() {
   }
