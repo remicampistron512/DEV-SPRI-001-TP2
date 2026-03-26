@@ -227,6 +227,10 @@ public class ConsoleMenus {
   }
 
   private void displayBookingsByRoomMenu() {
+    printAllMeetingRooms();
+    System.out.print("Id de la salle : ");
+    Long roomId = Long.parseLong(in.nextLine());
+    meetingRoomService.displayBookingsByRoom(roomId);
   }
 
   private void displayBookingsByDateMenu() {

@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
   List<Booking> findByMeetingRoomIdAndDate(Long meetingRoomId, LocalDate date);
+
+  List<Booking> findByMeetingRoomId(Long roomId);
 }
