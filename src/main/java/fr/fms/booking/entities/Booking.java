@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.awt.print.Book;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -25,6 +26,7 @@ public class Booking implements Serializable {
   private LocalTime startDate;
   private LocalTime endDate;
 
+  public Booking(){};
   public Booking(long id, MeetingRoom meetingRoom, LocalDate date, LocalTime startDate,
       LocalTime endDate) {
     this.id = id;
@@ -78,5 +80,16 @@ public class Booking implements Serializable {
 
   public void setEndDate(LocalTime endDate) {
     this.endDate = endDate;
+  }
+
+  @Override
+  public String toString() {
+    return "Réservation{" +
+        "id=" + id +
+        ", salle='" + meetingRoom.getName()+ '\'' +
+        ", jour='" + date + '\'' +
+        ", début='" + startDate + '\'' +
+        ", fin='" + endDate + '\'' +
+        '}';
   }
 }

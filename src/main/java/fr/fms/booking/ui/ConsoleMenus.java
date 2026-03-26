@@ -199,6 +199,31 @@ public class ConsoleMenus {
 
 
   private void deleteBookingMenu() {
+    printAllBookings();
+    long bookingId = readExistingBookingId();
+
+    try {
+      bookingRepository.deleteById(bookingId);
+      System.out.println("La salle de réunion a bien été supprimée");
+    } catch (Exception e) {
+      System.out.println("Impossible de supprimer la salle " + e.getMessage());
+    }
+  }
+
+  private long readExistingBookingId() {
+    while (true){
+      long id = readLong("Choisissez l'id de la réservation : ");
+      if(bookingRepository.existsById(id)){
+        return id;
+      }
+      System.out.println("Réservation introuvable");
+    }
+  }
+
+  private void printAllBookings() {
+    for (Booking booking : bookingRepository.findAll()) {
+      System.out.println(booking);
+    }
   }
 
   private void displayBookingsByRoomMenu() {
