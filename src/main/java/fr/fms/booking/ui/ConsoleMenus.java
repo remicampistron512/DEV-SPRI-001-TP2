@@ -77,7 +77,7 @@ public class ConsoleMenus {
     meetingRoomService.updateMeetingRoom(meetingRoomId,name,capacity);
   }
 
-  private Object readExistingMeetingRoomId() {
+  private long readExistingMeetingRoomId() {
     while (true){
       long id = readLong("Choisissez l'id de la salle : ");
       if(meetingRoomRepository.existsById(id)){
@@ -94,6 +94,16 @@ public class ConsoleMenus {
   }
 
   private void deleteMeetingRoomMenu() {
+    printAllMeetingRooms();
+    long meetingRoomId = readExistingMeetingRoomId();
+
+    try {
+      meetingRoomRepository.deleteById(meetingRoomId);
+      System.out.println("La salle de réunion a bien été supprimée");
+    } catch (Exception e) {
+      System.out.println("Impossible de supprimer la salle " + e.getMessage());
+    }
+
   }
 
   private void createBookingMenu() {
