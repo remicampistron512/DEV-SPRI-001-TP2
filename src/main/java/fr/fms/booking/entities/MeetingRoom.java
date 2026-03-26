@@ -60,7 +60,7 @@ public class MeetingRoom implements Serializable {
 
   @Override
   public String toString() {
-    return "Article{" +
+    return "Salle{" +
         "id=" + id +
         ", name='" + name + '\'' +
         ", capacity='" + capacity + '\'' +
